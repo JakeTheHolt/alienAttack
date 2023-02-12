@@ -70,6 +70,7 @@ def update(): # Update function is called 60 times a second
             VISIBLE.remove(player_projectile)
         if enemy in VISIBLE and player_projectile.colliderect(enemy) and not enemy_hit_timer.is_active(): # Did the player_projectile collide with the enemy?
             ENEMY_HEALTH -= 1
+            sounds.shot.play()
             enemy_hit_timer.start() # start the timer for the enemy
             if (ENEMY_HEALTH == 0):
                 enemy.image = 'enemy_hurt5'
@@ -143,7 +144,6 @@ def on_key_down(key):
 
     if key == keys.SPACE:
         throw_player_projectile()
-    #    sounds.shot.play()
 
     if enemy in VISIBLE:
         if (enemy_hit_timer.is_expired() and (ENEMY_HEALTH == 0)): # Only after the timer has expired, and health is 0, remove the enemy
