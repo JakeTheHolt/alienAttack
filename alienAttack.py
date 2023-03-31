@@ -92,7 +92,7 @@ def update(): # Update function is called 60 times a second
             music.set_volume(0.5)
             animate(enemy, duration=0.001, pos=(enemy_start[LEVEL][0], enemy_start[LEVEL][1]))
     if DIFFICULTY == 10:
-        if TIMER%ENEMY_SPEED == 59 or TIMER%ENEMY_SPEED == 10:
+        if TIMER%ENEMY_SPEED == 59 or TIMER%ENEMY_SPEED == 1:
             throw_enemy_projectile()
             sounds.lazer.play()
         ENEMY_PROJECTILE_SPEED = 1
