@@ -22,6 +22,7 @@ ENEMY_HEALTH = 1
 ENEMY_SPEED = 60 #60 is 1 tile every second!
 PLAYER_PROJECTILE_SPEED = 1.0 # Smaller is faster
 ENEMY_PROJECTILE_SPEED = 3.0
+DIFFICULTY = 1
 
 unlock = 0
 
@@ -37,12 +38,14 @@ VISIBLE = [player, enemy]
 
 enemy.yv = -1
 music.play('background')
-music.set_volume(0.8)
+music.set_volume(0.5)
 
 ENEMY_HEALTH = 5
 
+
 def draw():
     global LEVEL
+    global DIFFICULTY
     screen.clear()
     for row in range(len(maze[LEVEL])):
         for column in range(len(maze[LEVEL][row])):
@@ -54,6 +57,7 @@ def draw():
             screen.blit(tile, (x, y)) # Draw the tile as the maze intended
     for character in VISIBLE: # Draw all visible characters
         character.draw()
+    screen.draw.text("ROUND:" + str(DIFFICULTY), [5,0], fontsize=60, color="darkred")
 def update(): # Update function is called 60 times a second
     global VISIBLE
     global TIMER
@@ -61,28 +65,90 @@ def update(): # Update function is called 60 times a second
     global ENEMY_SPEED
     global PLAYER_HEALTH
     global ENEMY_PROJECTILE_SPEED
+    global DIFFICULTY
     TIMER = TIMER + 1
 
+    if DIFFICULTY == 2:
+        ENEMY_PROJECTILE_SPEED = 2.8
+    if DIFFICULTY == 3:
+        ENEMY_PROJECTILE_SPEED = 2.6
+    if DIFFICULTY == 4:
+        ENEMY_PROJECTILE_SPEED = 2.4
+    if DIFFICULTY == 5:
+        ENEMY_PROJECTILE_SPEED = 2.2
+    if DIFFICULTY == 6:
+        ENEMY_PROJECTILE_SPEED = 2
+    if DIFFICULTY == 7:
+        ENEMY_PROJECTILE_SPEED = 1.8
+    if DIFFICULTY == 8:
+        ENEMY_PROJECTILE_SPEED = 1.6
+    if DIFFICULTY == 9:
+        ENEMY_PROJECTILE_SPEED = 1.5
+        if ENEMY_HEALTH == 0:
+            DIFFICULTY = 10
+            ENEMY_HEALTH = 10
+            music.stop()
+            music.play('boss')
+            music.set_volume(0.5)
+            animate(enemy, duration=0.001, pos=(enemy_start[LEVEL][0], enemy_start[LEVEL][1]))
+    if DIFFICULTY == 10:
+        if TIMER%ENEMY_SPEED == 59 or TIMER%ENEMY_SPEED == 10:
+            throw_enemy_projectile()
+            sounds.lazer.play()
+        ENEMY_PROJECTILE_SPEED = 1
+        enemy.image = 'mothership'
+        if ENEMY_HEALTH == 10:
+            enemy.image = 'mothership'
+        if ENEMY_HEALTH == 9:
+            enemy.image = 'mothership1'
+        if ENEMY_HEALTH == 8:
+            enemy.image = 'mothership2'
+        if ENEMY_HEALTH == 7:
+            enemy.image = 'mothership3'
+        if ENEMY_HEALTH == 6:
+            enemy.image = 'mothership4'
+        if ENEMY_HEALTH == 5:
+            enemy.image = 'mothership5'
+        if ENEMY_HEALTH == 4:
+            enemy.image = 'mothership6'
+        if ENEMY_HEALTH == 3:
+            enemy.image = 'mothership7'
+        if ENEMY_HEALTH == 2:
+            enemy.image = 'mothership8'
+        if ENEMY_HEALTH == 1:
+            enemy.image = 'mothership9'
+        if ENEMY_HEALTH == 0:
+            enemy.image = 'mothership10'
+            sounds.winner_chicken_dinner.play() #echos the winner_chicken_dinner sound effect
+            if enemy_hit_timer == 0:
+                game_exit("YOU WIN!")
+
     advance_timers() # Function to advance all active timers
+
+    if (ENEMY_HEALTH == 0) and DIFFICULTY != 10 and DIFFICULTY != 9:
+        enemy.image = 'enemy_hurt5'
+        time.sleep(1)
+        DIFFICULTY += 1
+        animate(enemy, duration=0.001, pos=(enemy_start[LEVEL][0], enemy_start[LEVEL][1]))
+        ENEMY_HEALTH = 5
+        enemy.image = 'enemy'
 
     if player_projectile in VISIBLE: # If player_projectile is visible, then move it by one space in the direction last perfored
         if player_projectile.x >= WIDTH or player_projectile.y >= HEIGHT or player_projectile.x <= -TILE_SIZE/2.0 or player_projectile.y <= -TILE_SIZE/2.0:
             VISIBLE.remove(player_projectile)
         if enemy in VISIBLE and player_projectile.colliderect(enemy) and not enemy_hit_timer.is_active(): # Did the player_projectile collide with the enemy?
-            ENEMY_HEALTH -= 1
+            ENEMY_HEALTH -= 5
             sounds.shot.play()
             enemy_hit_timer.start() # start the timer for the enemy
-            if (ENEMY_HEALTH == 0):
+            if (ENEMY_HEALTH == 0) and DIFFICULTY != 10:
                 enemy.image = 'enemy_hurt5'
-                sounds.winner_chicken_dinner.play()
-                #game_exit("YOU WIN!")
-            if (ENEMY_HEALTH == 4):
+            if (ENEMY_HEALTH == 4) and DIFFICULTY != 10:
                 enemy.image = 'enemy_hurt'
-            if (ENEMY_HEALTH == 3):
+            if (ENEMY_HEALTH == 3) and DIFFICULTY != 10:
                 enemy.image = 'enemy_hurt1'
-            if (ENEMY_HEALTH == 2):
+            if (ENEMY_HEALTH == 2) and DIFFICULTY != 10:
                 enemy.image = 'enemy_hurt2'
-            if (ENEMY_HEALTH == 1):
+            if (ENEMY_HEALTH == 1) and DIFFICULTY != 10:
                 enemy.image = 'enemy_hurt3'
 
     if enemy_projectile in VISIBLE: # If player_projectile is visible, then move it by one space in the direction last perfored
