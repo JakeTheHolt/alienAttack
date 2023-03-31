@@ -137,7 +137,7 @@ def update(): # Update function is called 60 times a second
         if player_projectile.x >= WIDTH or player_projectile.y >= HEIGHT or player_projectile.x <= -TILE_SIZE/2.0 or player_projectile.y <= -TILE_SIZE/2.0:
             VISIBLE.remove(player_projectile)
         if enemy in VISIBLE and player_projectile.colliderect(enemy) and not enemy_hit_timer.is_active(): # Did the player_projectile collide with the enemy?
-            ENEMY_HEALTH -= 5
+            ENEMY_HEALTH -= 1
             sounds.shot.play()
             enemy_hit_timer.start() # start the timer for the enemy
             if (ENEMY_HEALTH == 0) and DIFFICULTY != 10:
